@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 # -*- encoding: utf-8 -*-
 
 import datetime
@@ -30,12 +30,12 @@ def read_messages(dbfile):
     count = c.fetchone()[0]
 
     smses = etree.Element("smses", attrib={"count": str(count)})
-    c.execute("SELECT _id, thread_id, address, person, date, protocol, read, priority, status, type, callback_number, reply_path_present, subject, body, service_center, failure_cause, locked, error_code, stack_type, seen, sort_index FROM sms ORDER BY date DESC")
+    c.execute("SELECT _id, thread_id, address, person, date, protocol, read, status, type, reply_path_present, subject, body, service_center, sub_id, subject, subject,  locked, date_sent,  error_code, seen FROM sms ORDER BY date DESC")
     while True:
         row = c.fetchone()
         if row is None: break
 
-        rec_id, thread_id, address, person, date, protocol, read, priority, status, type, callback_number, reply_path_present, subject, body, service_center, failure_cause, locked, error_code, stack_type, seen, sort_index = row
+        rec_id, thread_id, address, person, date, protocol, read, status, type, reply_path_present, subject, body, service_center, sub_id, toa, sc_toa, locked, date_sent, error_code, seen = row
 
         if protocol is None:
             protocol = 0
@@ -54,6 +54,7 @@ def read_messages(dbfile):
             "status": v(status),
             "locked": v(locked),
             "readable_date": datetime.datetime.fromtimestamp(date/1000).strftime("%b %d, %Y %l:%M:%S %p"),
+            "date_sent": v(date),
             })
         smses.append(sms)
 
